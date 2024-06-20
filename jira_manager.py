@@ -1,22 +1,9 @@
-# In [33]: for history in stam.changelog.histories:
-#     ...:     for item in history.items:
-#     ...:         if item.field == 'status':
-#     ...:             print('%s -> %s on %s'% (item.fromString, item.toString, history.created))
-
-
-# Ready for integration -> Ready for Testing on 2024-06-06T15:39:23.421+0300
-# Review -> Ready for integration on 2024-06-04T20:34:19.924+0300
-# Development -> Review on 2024-06-02T09:47:35.724+0300
-# Waiting for More Info -> Development on 2024-06-02T09:47:33.571+0300
-# Development -> Waiting for More Info on 2024-05-15T10:06:44.512+0300
-# Review -> Development on 2024-05-15T10:06:31.261+0300
-# Development -> Review on 2024-03-31T10:05:02.198+0300
-# Backlog -> Development on 2024-02-13T16:23:59.812+0200
-
 from jira import JIRA
 from dotenv import load_dotenv
 from common_functions import days_between_dates
 import os
+import plotly.express as px
+import pandas as pd
 
 load_dotenv()
 
@@ -56,9 +43,22 @@ class JiraManager(object):
                 statues_changes_list[i - 1][2], statues_changes_list[i][2])
         return time_in_status_dict
 
+    def get_user_by_name(self, user_name):
+        return self.jira.search_users(query=user_name)
+
     def get_time_in_status_for_all_tickets_in_sprint_for_user(self, sprint_id, user_id):
         jql = f'project = NK AND Sprint = {sprint_id} AND assignee = {user_id}'  # or was assigned
         issues = self.jira.search_issues(jql)
 
         for issue in issues:
             self.get_time_in_status_for_ticket(issue.key)
+
+    def get_pie_chart_for_time_in_status_for_ticket(self, ticket_key):
+        time_in_status_dict = self.get_time_in_status_for_ticket(ticket_key)
+        df = pd.DataFrame(time_in_status_dict, index=[0])
+        fig = px.pie(df, names=df.columns, values=df.iloc[0])
+        fig.update_traces(textposition='inside', textinfo='percent+label+value', textfont_size=20,
+                          marker=dict(line=dict(color='#000000', width=2)))
+        image_path = "images/fig1.png"
+        fig.write_image("static/" + image_path)
+        return image_path, time_in_status_dict

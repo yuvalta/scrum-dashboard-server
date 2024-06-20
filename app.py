@@ -1,5 +1,4 @@
-import json
-from flask import Flask
+from flask import Flask, render_template
 from jira_manager import JiraManager
 
 app = Flask(__name__)
@@ -8,7 +7,7 @@ jira_manager = JiraManager()
 
 @app.route('/')
 def home():
-    return 'Hello World!'
+    return render_template('index.html', title="Home", content="Hello, uv!")
 
 
 @app.route('/dashboard')
@@ -21,6 +20,29 @@ def time_in_status(ticket_number):
     statuses_changes_dict = jira_manager.get_time_in_status_for_ticket(ticket_number)
     return_page = f"<h3>{ticket_number}</h3> <br>"
     return_page += "<br>".join([f"{key}: {value}" for key, value in statuses_changes_dict.items()])
+    return return_page
+
+
+@app.route('/dashboard/<ticket_number>')
+def dashboard_ticket(ticket_number):
+    pie_chart_path, time_in_status_dict = jira_manager.get_pie_chart_for_time_in_status_for_ticket(ticket_number)
+    app.logger.info(pie_chart_path)
+
+    return render_template('index.html', image_path=pie_chart_path,
+                           title=f"Time spent on each status - {ticket_number}", content=time_in_status_dict)
+
+
+@app.route('/user/<user_name>')
+def user(user_name):
+    user_details = jira_manager.get_user_by_name(user_name)
+    if not user_details:
+        return f"User {user_name} not found"
+
+    return_page = f"<h3>{user_name}</h3> <br>"
+    for current_user in user_details:
+        return_page += "<br>".join(
+            [current_user.displayName, current_user.emailAddress, current_user.accountId]) + "<br><br>"
+
     return return_page
 
 
