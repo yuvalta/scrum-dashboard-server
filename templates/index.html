@@ -2,12 +2,17 @@
 
 <html>
   <head>
-    <title>Flask App - {{title}}</title>
+    <title>Sys Dash</title>
   </head>
 
   <body>
     <h1>{{title}}</h1>
     <p>{{content}}</p>
-    <img src="{{ url_for('static', filename='images/fig1.png') }}"/>
+    {% for ticket in tickets %}
+    <br/>
+      <a href="https://zadara.atlassian.net/browse/{{ ticket }}"> {{ ticket }}</a>
+      <img src="/static/images/{{ ticket }}.png">
+    <br/>
+    {% endfor %}
   </body>
 </html>
