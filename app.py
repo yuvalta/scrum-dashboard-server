@@ -28,7 +28,7 @@ def dashboard_ticket(ticket_number):
     pie_chart_path, time_in_status_dict = jira_manager.get_pie_chart_for_time_in_status_for_ticket(ticket_number)
     app.logger.info(pie_chart_path)
 
-    return render_template('index.html', image_path=pie_chart_path,
+    return render_template('index.html', charts=[ticket_number],
                            title=f"Time spent on each status - {ticket_number}", content=time_in_status_dict)
 
 
@@ -44,6 +44,12 @@ def user(user_name):
             [current_user.displayName, current_user.emailAddress, current_user.accountId]) + "<br><br>"
 
     return return_page
+
+@app.route('/user/<user_name>/sprint_report')
+def user_sprint_report(user_name):
+    tickets, user_display_name = jira_manager.get_sprint_report_for_user(user_name, app)
+    app.logger.info(tickets)
+    return render_template('index.html', title=f"Sprint report for {user_display_name}", content="", tickets=tickets)
 
 
 if __name__ == '__main__':

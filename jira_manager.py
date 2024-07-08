@@ -59,6 +59,23 @@ class JiraManager(object):
         fig = px.pie(df, names=df.columns, values=df.iloc[0])
         fig.update_traces(textposition='inside', textinfo='percent+label+value', textfont_size=20,
                           marker=dict(line=dict(color='#000000', width=2)))
-        image_path = "images/fig1.png"
+        image_path = f'images/{ticket_key}.png'
         fig.write_image("static/" + image_path)
         return image_path, time_in_status_dict
+
+    def get_sprint_report_for_user(self, user_name, app):
+        user_id = self.get_user_by_name(user_name)[0].accountId
+        user_display_name = self.get_user_by_name(user_name)[0].displayName
+        jql = f'project = "NK" AND assignee was {user_id} AND Sprint in openSprints() ORDER BY status DESC, created DESC'
+        issues = self.jira.search_issues(jql)
+        app.logger.info(issues)
+
+        tickets = []
+        for issue in issues:
+            if issue.fields.status.name == 'Closed' or issue.fields.status.name == 'Ready for testing':
+                chart_path, _ = self.get_pie_chart_for_time_in_status_for_ticket(issue.key)
+                if chart_path:
+                    tickets.append(issue.key)
+
+        return tickets, user_display_name
+
