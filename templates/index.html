@@ -1,18 +1,37 @@
 <!DOCTYPE html>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
 <html>
-  <head>
+<head>
     <title>Sys Dash</title>
-  </head>
+</head>
 
-  <body>
+<body>
+<button type="button" onclick="runSprintReport('aviv.zech');">Aviv</button>
+<button type="button" onclick="runSprintReport('michael.dreyer');">Michael</button>
+<button type="button" onclick="runSprintReport('yuval.tamir');">Yuval</button>
+
+<div id="content">
     <h1>{{title}}</h1>
     <p>{{content}}</p>
-    {% for ticket in tickets %}
-    <br/>
-      <a href="https://zadara.atlassian.net/browse/{{ ticket }}"> {{ ticket }}</a>
-      <img src="/static/images/{{ ticket }}.png">
-    <br/>
-    {% endfor %}
-  </body>
+    <a href="https://zadara.atlassian.net/issues/?jql={{jql}}"> See filter </a>
+    <div id="charts" class="charts">
+        {% for ticket in tickets %}
+        <br/>
+        <a href="https://zadara.atlassian.net/browse/{{ ticket }}"> {{ ticket }}</a>
+        <img src="/static/images/{{ ticket }}.png">
+        <br/>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript">
+    function runSprintReport(user_name) {
+        location.href = `/user/${user_name}/sprint_report`
+
+    }
+</script>
+
 </html>
