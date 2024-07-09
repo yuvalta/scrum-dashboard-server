@@ -72,10 +72,11 @@ class JiraManager(object):
 
         tickets = []
         for issue in issues:
-            if issue.fields.status.name == 'Closed' or issue.fields.status.name == 'Ready for testing':
+            app.logger.info(issue.fields.status.name)
+            if issue.fields.status.name == 'Closed' or issue.fields.status.name == 'Ready for Testing':
                 chart_path, _ = self.get_pie_chart_for_time_in_status_for_ticket(issue.key)
                 if chart_path:
                     tickets.append(issue.key)
 
-        return tickets, user_display_name
+        return tickets, user_display_name, jql
 

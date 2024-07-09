@@ -47,9 +47,9 @@ def user(user_name):
 
 @app.route('/user/<user_name>/sprint_report')
 def user_sprint_report(user_name):
-    tickets, user_display_name = jira_manager.get_sprint_report_for_user(user_name, app)
+    tickets, user_display_name, jql = jira_manager.get_sprint_report_for_user(user_name, app)
     app.logger.info(tickets)
-    return render_template('index.html', title=f"Sprint report for {user_display_name}", content="", tickets=tickets)
+    return render_template('index.html', title=f"Sprint report for {user_display_name}", content="", tickets=tickets, jql=jql)
 
 
 if __name__ == '__main__':
