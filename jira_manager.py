@@ -80,3 +80,18 @@ class JiraManager(object):
 
         return tickets, user_display_name, jql
 
+    def get_new_tickets_in_last_24_hours(self, app):
+        jql = 'project = zCompute  and "Scrum Team[Dropdown]" = SYS and (createdDate >= -2d or updatedDate >= -2d) and status = BACKLOG and Sprint is EMPTY and fixVersion = zCompute-24.03 and type != Epic'
+        issues = self.jira.search_issues(jql)
+
+        app.logger.info(issues)
+
+        last_issues_list = []
+        for issue in issues:
+            last_issues_list.append({
+                'key': issue.key,
+                'summary': issue.fields.summary,
+                'created': issue.fields.created,
+                'url': f'https://zadara.atlassian.net/browse/{issue.key}'
+            })
+        return last_issues_list
