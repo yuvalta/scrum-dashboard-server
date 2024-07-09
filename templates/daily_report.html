@@ -14,12 +14,25 @@
 <div id="content">
     <h1>{{title}}</h1>
     <p>{{content}}</p>
-    <a href="https://zadara.atlassian.net/issues/?jql={{jql}}"> See filter </a>
-    <div id="charts" class="charts">
-        {% for ticket in tickets %}
+    <div>
+        {% for pr in prs %}
         <br/>
-        <a href="https://zadara.atlassian.net/browse/{{ ticket }}"> {{ ticket }}</a>
-        <img src="/static/images/{{ ticket }}.png">
+        <h4> {{ pr.reason }} </h4>
+        <h5> {{ pr.updated_at }} </h5>
+        <a href="{{ pr.url }}"> {{ pr.title }}</a>
+        <br/>
+        {% endfor %}
+    </div>
+
+    <br/>
+    <hr>
+
+
+    <div>
+        {% for new_ticket in new_tickets %}
+        <br/>
+        <h4> {{ new_ticket.summary }} </h4>
+        <a href="{{ new_ticket.url }}"> {{ new_ticket.key }}</a>
         <br/>
         {% endfor %}
     </div>
@@ -30,6 +43,7 @@
 <script type="text/javascript">
     function runSprintReport(user_name) {
         location.href = `/user/${user_name}/sprint_report`
+
     }
 </script>
 
